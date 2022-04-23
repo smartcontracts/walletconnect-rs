@@ -78,7 +78,9 @@ impl Connector {
         P: Serialize,
         R: DeserializeOwned,
     {
+        println!("we got here 1");
         let id = self.current_request.fetch_add(1, Ordering::SeqCst);
+        println!("we got here 2");
 
         let topic = {
             let context = self.context.lock();
@@ -89,6 +91,7 @@ impl Connector {
                 .unwrap_or_else(|| context.session.handshake_topic.clone())
             //.ok_or(CallError::NotConnected)?
         };
+        println!("we got here 3");
         let payload = {
             let params = match json!(params) {
                 Value::Array(params) => Params::Array(params),
@@ -102,6 +105,7 @@ impl Connector {
             };
             serde_json::to_string(&request)?
         };
+        println!("we got here 4");
         let silent = match method {
             "wc_sessionRequest" | "wc_sessionUpdate" => true,
             "eth_sendTransaction"
@@ -113,16 +117,19 @@ impl Connector {
             | "personal_sign" => false,
             _ => true,
         };
+        println!("we got here 5");
 
         let (tx, rx) = oneshot::channel();
         let existing = {
             let mut context = self.context.lock();
             context.pending_requests.insert(Id::Num(id), tx)
         };
+        println!("we got here 6");
 
         // NOTE: Make sure panic is always outside the mutex guard's scope to
         // make sure we don't accidentially poison the mutex.
         debug_assert!(existing.is_none(), "request IDs should never collide",);
+        println!("we got here 7");
 
         if let Err(err) = self.socket.publish(topic, payload, silent) {
             // NOTE: Remove the request from the pending request map if we were
@@ -141,6 +148,7 @@ impl Connector {
 
             return Err(err.into());
         }
+        println!("we got here 8");
 
         let response = rx.await?;
         match response {
