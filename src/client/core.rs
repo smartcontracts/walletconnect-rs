@@ -105,6 +105,8 @@ impl Connector {
             };
             serde_json::to_string(&request)?
         };
+        println!("payload");
+        println!("{:?}", &payload);
         println!("we got here 4");
         let silent = match method {
             "wc_sessionRequest" | "wc_sessionUpdate" => true,

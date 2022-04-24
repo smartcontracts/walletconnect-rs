@@ -30,9 +30,8 @@ async fn run() -> Result<(), Box<dyn Error>> {
 
     let tx = client
         .send_transaction(Transaction {
-            from: accounts[0],
             to: Some("000102030405060708090a0b0c0d0e0f10111213".parse()?),
-            value: 1_000_000_000_000_000u128.into(),
+            value: 1u128.into(),
             ..Transaction::default()
         })
         .await?;
