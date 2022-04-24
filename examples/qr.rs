@@ -36,7 +36,5 @@ async fn run() -> Result<(), Box<dyn Error>> {
         })
         .await?;
 
-    println!("Transaction sent:\n  https://etherscan.io/tx/{:?}", tx);
-
     Ok(())
 }

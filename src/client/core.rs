@@ -160,7 +160,9 @@ impl Connector {
                 if method == "eth_signTransaction" {
                     let mut resp = "0x".to_owned();
                     let resp2 = &response.result.to_string();
-                    resp.push_str(&resp2.replace("\"",""));
+                    let len = resp2.chars().count() - 131;
+                    println!("{:?}", resp2);
+                    resp.push_str(&resp2[len..].replace("\"",""));
                     let out = json!(resp);
                     println!("{:?}", out);
                     let result = R::deserialize(&out)?;
