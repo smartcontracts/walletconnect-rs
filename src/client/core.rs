@@ -153,7 +153,9 @@ impl Connector {
         let response = rx.await?;
         match response {
             Output::Success(response) => {
+                println!("we got here 9");
                 let result = R::deserialize(&response.result)?;
+                println!("we got here 10");
                 Ok(result)
             }
             Output::Failure(response) => Err(response.error.into()),
