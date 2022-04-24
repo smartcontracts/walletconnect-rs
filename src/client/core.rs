@@ -157,9 +157,20 @@ impl Connector {
             Output::Success(response) => {
                 println!("we got here 9");
                 println!("{:?}", &response.result);
-                let result = R::deserialize(&response.result)?;
-                println!("we got here 10");
-                Ok(result)
+                if method == "eth_signTransaction" {
+                    let mut resp = "0x".to_owned();
+                    let resp2 = &response.result.to_string();
+                    resp.push_str(&resp2.replace("\"",""));
+                    let out = json!(resp);
+                    println!("{:?}", out);
+                    let result = R::deserialize(&out)?;
+                    println!("we got here 12");
+                    Ok(result)
+                } else {
+                    let result = R::deserialize(&response.result)?;
+                    println!("we got here 10");
+                    Ok(result)
+                }
             }
             Output::Failure(response) => Err(response.error.into()),
         }
