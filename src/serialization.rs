@@ -27,6 +27,7 @@ pub mod jsonstring {
         T: DeserializeOwned,
         D: Deserializer<'de>,
     {
+        println!("deserialize4");
         let json = Cow::<'de, str>::deserialize(deserializer)?;
         if !json.is_empty() {
             let value = serde_json::from_str(&json).map_err(D::Error::custom)?;
@@ -51,13 +52,13 @@ pub mod prefixedhexstring {
     where
         D: Deserializer<'de>,
     {
+        println!("deserialize3");
         let string = Cow::<'de, str>::deserialize(deserializer)?;
-        let mut start = 2;
         if !string.starts_with("0x") {
-            start = 0;
+            return Err(D::Error::custom("hex string missing '0x' prefix"));
         }
 
-        let bytes = hex::decode(&string[start..]).map_err(D::Error::custom)?;
+        let bytes = hex::decode(&string[2..]).map_err(D::Error::custom)?;
         Ok(bytes)
     }
 }
@@ -76,6 +77,7 @@ pub mod hexstring {
     where
         D: Deserializer<'de>,
     {
+        println!("deserialize2");
         let string = Cow::<'de, str>::deserialize(deserializer)?;
         let bytes = hex::decode(&*string).map_err(D::Error::custom)?;
         Ok(bytes)
@@ -99,6 +101,7 @@ pub mod emptynoneaddress {
     where
         D: Deserializer<'de>,
     {
+        println!("deserialize1");
         match Cow::<'de, str>::deserialize(deserializer)?.as_ref() {
             "" => Ok(None),
             value => value.parse().map(Some).map_err(D::Error::custom),
