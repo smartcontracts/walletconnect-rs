@@ -52,11 +52,12 @@ pub mod prefixedhexstring {
         D: Deserializer<'de>,
     {
         let string = Cow::<'de, str>::deserialize(deserializer)?;
+        let mut start = 2;
         if !string.starts_with("0x") {
-            return Err(D::Error::custom("hex string missing '0x' prefix"));
+            start = 0;
         }
 
-        let bytes = hex::decode(&string[2..]).map_err(D::Error::custom)?;
+        let bytes = hex::decode(&string[start..]).map_err(D::Error::custom)?;
         Ok(bytes)
     }
 }
